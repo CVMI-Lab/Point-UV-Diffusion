@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Texture Generation on 3D Meshes with Point-UV Diffusion">
+  <meta name="keywords" content="3D generation, textures, diffusion">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Point-UV Diffusion</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <style>
+    .render_wrapper {
+        position: relative;
+        height: 350px;
+    }
+    .external-link {
+    color: #ffffff !important; 
+    background-color: rgb(104, 161, 135) !important;
+    border-radius: 10px !important;
+    font-size: 12px !important;
+    }
+
+    .external-link .icon {
+    font-size: 20px !important;
+    }
+
+    .external-link:hover {
+    background-color: #555555 !important;
+    }
+
+    .conference {
+    font-family: 'Google Sans', sans-serif;
+    color: hsl(240, 2%, 10%) !important;
+    font-family: 'Merriweather', serif;
+    font-weight: 500;
+    }
+
+    .results-carousel textbox {
+    font-size: 7px; 
+    font-family: 'Google Sans', cursive, sans-serif;
+    color: hsl(321, 56%, 56%) !important;
+    }
+    .dialog-box {
+        background-color: rgba(255, 255, 255, 0.5); 
+        border: 1px solid rgba(96, 85, 85, 0.494);
+        padding: 10px; 
+        border-radius: 15px; 
+        z-index: 1000; 
+        font-size: 14px; 
+        font-family: 'Comic Sans MS', cursive, sans-serif; 
+        color: hsl(322, 33%, 22%) !important;
+        font-weight: bold; 
+    }
+  </style>
+
+  <!-- Import the component -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+</head>
+<body>
+
+<section class="hero">
+    <div class="hero-body">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered">
+                <div class="column has-text-centered">
+                    <h1 class="title is-1 publication-title">Texture Generation on 3D Meshes with Point-UV Diffusion</h1>
+                    <div class="is-size-5 publication-authors">
+                        <span class="author-block">
+                            <a href="https://scholar.google.com/citations?user=JX8kSoEAAAAJ&hl=zh-CN" target="_Blank">Xin Yu</a>,</span>
+                        <span class="author-block">
+                            <a href="https://daipengwa.github.io/" target="_Blank">Peng Dai</a>,</span>
+                        <span class="author-block">
+                            <a href="https://fenglinglwb.github.io/" target="_Blank">Wenbo Li</a>,
+                        </span>
+                        <span class="author-block">
+                            Lan Ma,
+                        </span>
+                        <span class="author-block">
+                            <a href="https://liuzhengzhe.github.io/" target="_Blank">Zhengzhe Liu</a>,
+                        </span>
+                        <span class="author-block">
+                            <a href="https://xjqi.github.io/" target="_Blank">Xiaojuan Qi</a>,
+                        </span>
+                    </div>
+
+                    <!-- <div class="is-size-5 publication-authors">
+                        <span class="author-block"><sup>1</sup>The University of Hong Kong,</span>
+                        <span class="author-block"><sup>2</sup>The Chinese University of Hong Kong,</span>
+                        <span class="author-block"><sup>3</sup>TCL Corporate Research</span>
+                    </div> -->
+                    <div class="is-size-5 conference">
+                        <span class="author-block">ICCV 2023</span>
+                    </div>
+
+                    <div class="column has-text-centered">
+                        <div class="publication-links">
+                            <!-- PDF Link. -->
+                            <span class="link-block">
+                                <a href="#"
+                                    class="external-link button is-normal is-rounded is-dark">
+                                    <span class="icon">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </span>
+                                    <span>Paper</span>
+                                </a>
+                            </span>
+                            <!-- <span class="link-block">
+                                <a class="external-link button is-normal is-rounded is-dark" href="#">
+                                    <span class="icon">
+                                        <i class="ai ai-arxiv"></i>
+                                    </span>
+                                    <span>arXiv</span>
+                                </a>
+                            </span> -->
+
+                            <!-- Github Link. -->
+                            <span class="link-block">
+                                <a href="#" class="external-link button is-normal is-rounded is-dark">
+                                    <span class="icon">
+                                        <i class="fab fa-github"></i>
+                                    </span>
+                                    <span>Code</span>
+                                </a>
+                            </span>
+                            <!-- Dataset Link. -->
+                            <span class="link-block"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="hero teaser">
+    <div class="container is-max-desktop">
+        <div class="hero-body">
+            <img src="./figs/teaser.png" height="150%" />
+            <!-- <h2 class=" subtitle has-text-centered" style="padding-top: 10px">
+                A gallery of generated results by our Point-UV Diffusion. Our method is capable of processing meshes of any genus, generating diversified, geometry-compatible, and high-fidelity textures. 
+            </h2> -->
+        </div>
+    </div>
+</section>
+
+<section class="section hero is-light">
+    <div class="container is-max-desktop">
+        <!-- Abstract. -->
+        <div class="columns is-centered has-text-centered">
+            <div class="column is-four-fifths">
+                <h2 class="title is-3">Abstract</h2>
+                <div class="content has-text-justified">
+                    <p>
+                        In this work, we focus on synthesizing high-quality textures on
+                        3D meshes. 
+                        We present Point-UV diffusion, a coarse-to-fine pipeline that marries the denoising diffusion model with UV mapping to generate 3D consistent and high-quality texture images in UV space. 
+                        We start with introducing a point diffusion model to synthesize low-frequency texture components with our tailored style guidance to tackle the biased color distribution.
+                        The derived coarse texture offers global consistency and 
+                        serves as a condition for the subsequent UV diffusion stage, aiding in regularizing the model to generate a 3D consistent UV texture image.
+                        Then, a UV diffusion model with hybrid conditions is developed 
+                         to enhance the texture fidelity in the 2D UV space. Our method can process meshes of any genus, generating
+                        diversified, geometry-compatible, and high-fidelity textures. 
+                        
+                    </p>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!---------------------------------------------Functions Start-------------------------------------------------->
+<script>
+    function createRadioButtons_image(name) {
+        const createRadioButton = (value, label, checked = false) => {
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = name;
+            input.value = value;
+            input.checked = checked;
+            input.style.opacity = "0";
+            input.id = value + name; 
+            input.style.position = 'absolute'; 
+
+            const labelElement = document.createElement('label'); 
+            labelElement.htmlFor = input.id; 
+
+            const span = document.createElement('span');
+            span.innerHTML = label;
+
+            labelElement.appendChild(input);
+            labelElement.appendChild(span);
+
+            const div = document.createElement('div');
+            div.appendChild(labelElement);
+
+            return div;
+        };
+
+        return [
+            createRadioButton('texture', 'texture', true), // Default to texture
+            createRadioButton('mesh', 'mesh'),
+            createRadioButton('image', 'image')
+        ];
+    }
+
+    function createRadioButtons_uncondition(name) {
+        const createRadioButton = (value, label, checked = false) => {
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = name;
+            input.value = value;
+            input.checked = checked;
+            input.style.opacity = "0";
+            input.id = value + name; 
+            input.style.position = 'absolute'; 
+
+            const labelElement = document.createElement('label'); 
+            labelElement.htmlFor = input.id; 
+
+            const span = document.createElement('span');
+            span.innerHTML = label;
+
+            labelElement.appendChild(input);
+            labelElement.appendChild(span);
+
+            const div = document.createElement('div');
+            div.appendChild(labelElement);
+
+            return div;
+        };
+
+        return [
+            createRadioButton('texture', 'texture', true), // Default to texture
+            createRadioButton('mesh', 'mesh')
+        ];
+    }
+
+    function createImageElement(src) {
+        const imageElement = document.createElement('img');
+        imageElement.src = src;
+        imageElement.style.display = "none"; 
+        imageElement.style.width = '100%';
+        imageElement.style.height = '100%';
+        return imageElement;
+    }
+
+    function createModelView_image(modelPath, index) {
+        const modelDiv = document.createElement('div');
+        modelDiv.className = 'item render_wrapper';
+        
+        // Create and append Model Viewer
+        const modelViewerDiv = document.createElement('div');
+        modelViewerDiv.className = 'render_wrapper';
+        const modelViewer = document.createElement('model-viewer');
+        // ... set modelViewer properties ...
+        modelViewer.src = "./image_models/" + modelPath + ".glb";
+        modelViewer.alt = 'Description of model';
+        modelViewer.setAttribute('auto-rotate', '');
+        modelViewer.setAttribute('camera-controls', '');
+        modelViewer.style.width = '100%';
+        modelViewer.style.height = '100%';
+        modelViewer.style.backgroundColor = 'transparent';
+        modelViewer.setAttribute('camera-orbit', '50deg 75deg 3m');
+
+        const imageElement = createImageElement("./images/" + modelPath + ".png");
+        const radioButtons = createRadioButtons_image('display-option-' + index);
+        const updateColors = () => {
+            radioButtons.forEach(rb => {
+                rb.querySelector('span').style.color = rb.querySelector('input').checked ? 'green' : 'blue';
+                rb.querySelector('span').style.opacity = rb.querySelector('input').checked ? 1 : 0.2;
+            });
+        };
+
+        
+        radioButtons.forEach(radioButton => {
+            radioButton.querySelector('input').addEventListener('change', updateColors);
+        });
+        updateColors();
+
+        let originalTexture = null;
+        modelViewer.addEventListener('load', function() {
+            const material = modelViewer.model.materials[0];
+            originalTexture = material.pbrMetallicRoughness.baseColorTexture.texture;
+        });
+
+        radioButtons[0].querySelector('input').addEventListener('change', function() {
+            const material = modelViewer.model.materials[0];
+            const texture = material.pbrMetallicRoughness.baseColorTexture.texture;
+            if (this.checked) {
+                const material = modelViewer.model.materials[0];
+                material.pbrMetallicRoughness.baseColorTexture.setTexture(originalTexture);
+                modelViewer.style.display = "block";
+                imageElement.style.display = "none";
+            }
+        });
+        radioButtons[1].querySelector('input').addEventListener('change', function() {
+            const material = modelViewer.model.materials[0];
+            const texture = material.pbrMetallicRoughness.baseColorTexture.texture;
+            if (this.checked) {
+                const material = modelViewer.model.materials[0];
+                material.pbrMetallicRoughness.baseColorTexture.setTexture(null);
+                modelViewer.style.display = "block";
+                imageElement.style.display = "none";
+
+            }
+        });
+        radioButtons[2].querySelector('input').addEventListener('change', function() {
+            if (this.checked) {
+                modelViewer.style.display = "none";
+                imageElement.style.display = "block";
+            }
+        });
+
+        const controlsDiv = document.createElement('div');
+        controlsDiv.className = 'controls';
+        radioButtons.forEach(radioButton => controlsDiv.appendChild(radioButton));
+        modelDiv.appendChild(controlsDiv);
+
+        modelDiv.appendChild(imageElement);
+        modelDiv.appendChild(modelViewer); // Append model viewer first
+        modelDiv.appendChild(modelViewerDiv);
+
+        return modelDiv;
+    }
+
+    function createModelView_uncondition(modelPath, index) {
+        const modelDiv = document.createElement('div');
+        modelDiv.className = 'item render_wrapper';
+        
+        // Create and append Model Viewer
+        const modelViewerDiv = document.createElement('div');
+        modelViewerDiv.className = 'render_wrapper';
+        const modelViewer = document.createElement('model-viewer');
+        // ... set modelViewer properties ...
+        modelViewer.src = "./models/" + modelPath + ".glb";
+        modelViewer.alt = 'Description of model';
+        modelViewer.setAttribute('auto-rotate', '');
+        modelViewer.setAttribute('camera-controls', '');
+        modelViewer.style.width = '100%';
+        modelViewer.style.height = '100%';
+        modelViewer.style.backgroundColor = 'transparent';
+        modelViewer.setAttribute('camera-orbit', '50deg 75deg 3m');
+
+
+        const radioButtons = createRadioButtons_uncondition('display-option-' + index);
+        const updateColors = () => {
+            radioButtons.forEach(rb => {
+                rb.querySelector('span').style.color = rb.querySelector('input').checked ? 'green' : 'blue';
+                rb.querySelector('span').style.opacity = rb.querySelector('input').checked ? 1 : 0.2;
+            });
+        };
+
+        
+        radioButtons.forEach(radioButton => {
+            radioButton.querySelector('input').addEventListener('change', updateColors);
+        });
+        updateColors();
+
+        let originalTexture = null;
+        modelViewer.addEventListener('load', function() {
+            const material = modelViewer.model.materials[0];
+            originalTexture = material.pbrMetallicRoughness.baseColorTexture.texture;
+        });
+
+        radioButtons[0].querySelector('input').addEventListener('change', function() {
+            const material = modelViewer.model.materials[0];
+            const texture = material.pbrMetallicRoughness.baseColorTexture.texture;
+            if (this.checked) {
+                const material = modelViewer.model.materials[0];
+                material.pbrMetallicRoughness.baseColorTexture.setTexture(originalTexture);
+                modelViewer.style.display = "block";
+            }
+        });
+        radioButtons[1].querySelector('input').addEventListener('change', function() {
+            const material = modelViewer.model.materials[0];
+            const texture = material.pbrMetallicRoughness.baseColorTexture.texture;
+            if (this.checked) {
+                const material = modelViewer.model.materials[0];
+                material.pbrMetallicRoughness.baseColorTexture.setTexture(null);
+                modelViewer.style.display = "block";
+
+            }
+        });
+
+        const controlsDiv = document.createElement('div');
+        controlsDiv.className = 'controls';
+        radioButtons.forEach(radioButton => controlsDiv.appendChild(radioButton));
+        modelDiv.appendChild(controlsDiv);
+
+        modelDiv.appendChild(modelViewer); // Append model viewer first
+        modelDiv.appendChild(modelViewerDiv);
+
+        return modelDiv;
+    }
+
+    function createModelView_text(modelPath, index) {
+        const modelDiv = document.createElement('div');
+        modelDiv.className = 'item render_wrapper';
+        
+        // Create and append Model Viewer
+        const modelViewerDiv = document.createElement('div');
+        modelViewerDiv.className = 'render_wrapper';
+        const modelViewer = document.createElement('model-viewer');
+        // ... set modelViewer properties ...
+        modelViewer.src = "./text_models/" + modelPath + ".glb";
+        modelViewer.alt = 'Description of model';
+        modelViewer.setAttribute('auto-rotate', '');
+        modelViewer.setAttribute('camera-controls', '');
+        modelViewer.style.width = '100%';
+        modelViewer.style.height = '100%';
+        modelViewer.style.backgroundColor = 'transparent';
+        modelViewer.setAttribute('camera-orbit', '50deg 75deg 3m');
+
+        const radioButtons = createRadioButtons_uncondition('display-option-' + index);
+        const updateColors = () => {
+            radioButtons.forEach(rb => {
+                rb.querySelector('span').style.color = rb.querySelector('input').checked ? 'green' : 'blue';
+                rb.querySelector('span').style.opacity = rb.querySelector('input').checked ? 1 : 0.2;
+            });
+        };
+
+        
+        radioButtons.forEach(radioButton => {
+            radioButton.querySelector('input').addEventListener('change', updateColors);
+        });
+        updateColors();
+
+        let originalTexture = null;
+        modelViewer.addEventListener('load', function() {
+            const material = modelViewer.model.materials[0];
+            originalTexture = material.pbrMetallicRoughness.baseColorTexture.texture;
+        });
+
+        radioButtons[0].querySelector('input').addEventListener('change', function() {
+            const material = modelViewer.model.materials[0];
+            const texture = material.pbrMetallicRoughness.baseColorTexture.texture;
+            if (this.checked) {
+                const material = modelViewer.model.materials[0];
+                material.pbrMetallicRoughness.baseColorTexture.setTexture(originalTexture);
+                modelViewer.style.display = "block";
+            }
+        });
+        radioButtons[1].querySelector('input').addEventListener('change', function() {
+            const material = modelViewer.model.materials[0];
+            const texture = material.pbrMetallicRoughness.baseColorTexture.texture;
+            if (this.checked) {
+                const material = modelViewer.model.materials[0];
+                material.pbrMetallicRoughness.baseColorTexture.setTexture(null);
+                modelViewer.style.display = "block";
+
+            }
+        });
+
+        const controlsDiv = document.createElement('div');
+        controlsDiv.className = 'controls';
+        radioButtons.forEach(radioButton => controlsDiv.appendChild(radioButton));
+
+        const dialogBox = document.createElement('div');
+        dialogBox.className = 'dialog-box';
+        dialogBox.style.position = 'absolute'; 
+        dialogBox.style.display = 'none'; 
+        dialogBox.style.top = '30px';  
+        dialogBox.style.right = '0';
+        
+        const descriptionCheckbox = document.createElement('input');
+        descriptionCheckbox.type = 'checkbox';
+        descriptionCheckbox.id = 'descriptionCheckbox-' + index;
+        descriptionCheckbox.style.opacity = "0";
+
+        const descriptionLabel = document.createElement('label'); 
+        descriptionLabel.htmlFor = descriptionCheckbox.id; 
+
+        const span = document.createElement('span');
+        span.innerHTML = 'Show Description';
+        span.style.position = 'relative';
+        span.style.top = '-7px';
+        span.style.marginLeft='10px';
+        span.style.whiteSpace = 'nowrap';
+
+        descriptionLabel.appendChild(span);
+
+
+        const descriptionText = "this is a test this is a test this is a test this is a test this is a test"; // 
+
+        descriptionCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                // dialogBox.innerHTML = descriptionText;
+                // dialogBox.style.display = 'block';
+                
+                fetch("./text/" + modelPath + ".txt")
+                    .then(response => response.text())
+                    .then(text => {
+                        dialogBox.innerHTML = text;
+                        dialogBox.style.display = 'block';
+                    })
+                    .catch(error => console.error(error));
+            } else {
+                dialogBox.style.display = 'none';
+            }
+        });
+
+        const checkboxWrapper = document.createElement('div');
+        checkboxWrapper.style.position = 'relative'; 
+        checkboxWrapper.appendChild(descriptionCheckbox);
+        checkboxWrapper.appendChild(dialogBox);
+        checkboxWrapper.appendChild(descriptionLabel);
+        controlsDiv.appendChild(checkboxWrapper); 
+
+        modelDiv.appendChild(controlsDiv);
+
+        modelDiv.appendChild(modelViewer); // Append model viewer first
+        modelDiv.appendChild(modelViewerDiv);
+
+        return modelDiv;
+    }
+
+    function createCarousel(modelPaths, resultsCarouselId, createModelViewFunction) {
+        const resultsCarousel = document.getElementById(resultsCarouselId);
+
+        modelPaths.forEach((modelPath, index) => {
+        const uniqueId = resultsCarouselId + '-model-' + index;
+        const modelDiv = createModelViewFunction(modelPath, uniqueId);
+        resultsCarousel.appendChild(modelDiv);
+        });
+    }
+
+
+</script>
+<!---------------------------------------------Functions Over-------------------------------------------------->
+
+<section class="hero">
+    <div class="hero-body">
+        <div class="container is-max-desktop">
+            <h1 class="title is-4">Unconditional texture generation</h1>
+            <div id="results-carousel1" class="carousel results-carousel"></div>
+        </div>
+    </div>
+</section>
+
+<section class="hero">
+    <div class="hero-body">
+        <div class="container is-max-desktop">
+            <h1 class="title is-4">Image-condition texture generation</h1>
+            <div id="results-carousel2" class="carousel results-carousel"></div>
+        </div>
+    </div>
+</section>
+
+<section class="hero">
+    <div class="hero-body">
+        <div class="container is-max-desktop">
+            <h1 class="title is-4">Text-condition texture generation</h1>
+            <div id="results-carousel3" class="carousel results-carousel"></div>
+        </div>
+    </div>
+</section>
+
+<script>
+    const modelPaths1 = [
+    "a770cb6ad4a97df84abd45348d17aaf8",
+    "a54ac4580f151f89278d386bfa54545",
+    "d0a3e48a84f68a9143dbb6421d614c0d",
+    "4a0db050c8703a8d6e3c8a33c4ddf2ef",
+    "9228f548332eacc51287e03b5b76fc86",
+    "682263e19fe7c52d492d9da2668ec34c",
+    "10cd74fb0af8021fbf7cf6012a0af9fc",
+    "fbd234dca7bb201c1bfa4cc8d66175d1",
+    "802c46001be93276283b00891f680579",
+    "4d7cb35d1d9f2434ccbcb819724fb563",
+    "a10ed77ab3a714f43dbb6421d614c0d",
+    "7b89037bf1695628eb03e749ccd7a541",
+    "d67a0b5dfecb565f2197da8dec8488d",
+    "c78a6f04268dd802cf004563556ddb36",
+    "5510d5af1ab5714b3c42e318f3affc",
+    "6419887905d9d67b7d3115a956c20163",
+    "a32febea4a0ac30171a782a4379556c7",
+    "76dd2d9f0183e09dd835cf838a2f2758",
+    "38e904bee502bd31e8b2b8dc0c816caf",
+    "f10263256eeb840b732c9e6120e90cf8",
+    "7309610420ae20c930ddb6ead95f49cc",
+    "4c668aab2c49f9ac9bf4d6e8e41d9e5b",
+    "9ee1b4fd18b040bb5445e46058840642",
+    "f441e4f7f123bde3cd7677199133326a",
+    "6e923ab0f28c3c2e7251f1ec40392b93",
+    "2031dca3aaeff940f7628281ecb18112",
+    "2a2e5ecd0ef6ab2f80360680c1602c7d",
+    "323fc7b1d2b44cb7ff2b8acf844d34d2",
+    "1e5db720b375205315bb540f42facfa9",
+    "d9346fab44b6308f40ef1c8b63a628f9",
+    "e159d82f67a5953b1fb41007d56c0ca1",
+    "ce23daa630833de7d9fad8aba2c312b7",
+    "d2af105ee87bc66dae981a300c94a911",
+    "bb4868c1026c04fd7df0e9a69c97c97d",
+    "b22405009444df73d27ba3fc43e70958",
+    "cf80306fbfc886095213cec267286d18",
+    "b07c1560f5c3bf20525319ccc5eeb31d",
+    "5cf7a44b8cd841d01f0ce9df23303cc0",
+    "7e7e130acfcdf64b1dec8546fd5980a9",
+    "35d60ae4cb2e81979d9fad88e2f4c8ff",
+    "37b432326fecc8a1327289c00b6dc9ca",
+    "74636f18a539da1cab610b0c94236463",
+    "9505568d7a277c7bdd7092ed47061a36",
+    "92973023278f568a4594f83fd12bcf18",
+    "836ddcae13c81d88a58a5ecb2008fd42",
+    "62f75f68a559cd9c5edbe4a62f5ee3a4",
+    "7affe342bb9be16d5936c7265c890fef",
+    "1482036d8ce3b51ffc0035da39bd5e1",
+    "692e96270191113358df8eeaf3dad1c",
+    "f0990151fa433f1498cfd47a860803c5",
+    ];
+
+    const modelPaths2 = [
+        '4702c7f73c64fa81cc19d3672693a8a0',
+        '174832b73cd6d91c9856fa70a578baeb',
+        '7216c7ef1edfed4e593ebeeedbff73b',
+        '35d60ae4cb2e81979d9fad88e2f4c8ff',
+        '7a783968f5b1f88ff50f16ba773dd73d',
+        'e777e42470ee9bf270ae142beb408e0',
+        'baf3304f1352fae41c6aa36e5af1449',
+        'b2239339005b14c8d675cc466d0d6fbc',
+        'd45cb36eb4c38786b9a7614f2da8d7ae',
+        'c7a87dff6ab53f3b7490c34ba5d2779',
+        'a9aac9089791465d30db3da8ce2a0a12',
+        '7186f1e8dbcb3e8a116162acefe23592',
+        '7f14110c96ee2cf6afa167a727ddfb67',
+        '596f93940a4d97866c752a9b08e87ad3',
+        '38feb6b209579f6faadbf8208284c675',
+        '5f2b41b50439518be679b7e0ecf5c9b0', 
+    ];
+
+    const modelPaths3 = [
+        "61bcde763ccbfe520ab6214a789faf",
+        "1d6f4020cab4ec1962d6a66a1a314d66",
+        "90992c45f7b2ee7d71a48b5339c6e0da",
+        "788a2ae90158f42af4b6538438a0b930",
+        "f34a4514f72a3a767c11a4098d0a0259",
+        "abe225081bec7d21c5a208307819a3a1",
+        "575cb36c87cd4896c5ae524fbf4f75e1",
+        "8f841c9a11ad77a6794a9f593d938882",
+        "21f2927b04e2f22830ddb6ead95f49cc",
+        "4552ab193b8566acea343d0d02e4d3bf",
+        "11aee78983b57cb34138477d68528833",
+        "74ae50b70108ca1118775c05a821f9ab",
+        "249f3eb6a7236ff7593ebeeedbff73b",
+        "6251b398004a02fffebad4f49b26ec52",
+        "a113c1f24b803d37bc5a6eb75687367",
+        "62c3b6eea96337609ae676623bdd3284",
+        "dfca4eae14e0bb541f6399f392c887ea",
+        "759d66c5dcf1cabfb99d75d512b660d0",
+        "d1caa22978e516655c31590a2627247",
+        "ea628b4568d4eb527085b4353236aad",
+        "6ec02d7a508434f1b0957d845ac33749",
+    ];
+
+
+    createCarousel(modelPaths1, 'results-carousel1', createModelView_uncondition);
+    createCarousel(modelPaths2, 'results-carousel2', createModelView_image);
+    createCarousel(modelPaths3, 'results-carousel3', createModelView_text);
+
+</script>
+
+
+
+<section class="section">
+    <div class="container is-max-desktop">
+       <!-- Overview. -->
+        <div class="columns is-centered" style="margin-top: 0px">
+            <div class="column is-full-width">
+                <h2 class="title is-4">Method Overview</h2>
+                <!-- <div class="content has-text-justified" style="padding-top: 15px">
+                    Our Point-UV diffusion starts with a 3D point diffusion model to colorize a set of sampled points on the mesh surface. This stage leverages the 3D topology for predicting low-frequency colors on the mesh, without being affected by the discontinuity of the UV map.  
+                    Based on the color components generated by the coarse stage, we further build a 2D diffusion model on the UV space to enhance the fidelity of the generated texture.
+                </div> -->
+                <img src="./figs/overview.png"/>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- <section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@inproceedings{#,
+        title={Texture Generation on 3D Meshes with Point-UV Diffusion},
+        author={Xin Yu and Peng Dai and Wenbo Li and Lan Ma and Zhengzhe Liu and Xiaojuan Qi},
+        booktitle={International Conference on Computer Vision (ICCV)},
+        year={2023}
+      }</code></pre>
+  </div>
+</section> -->
+
+
+<footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <!-- <a class="icon-link" href="#">
+                <i class="fas fa-file-pdf"></i>
+            </a>
+            <a class="icon-link" href="https://github.com/XinYu-Andy" class="external-link" disabled>
+                <i class="fab fa-github"></i>
+            </a> -->
+        </div>
+        <div class="columns is-centered">
+            <div class="column is-8">
+                <div class="content">
+                    <p style="text-align:center">
+                        Source code mainly borrowed from <a href="https://keunhong.com/">Keunhong Park</a>'s <a
+                            href="https://nerfies.github.io/">Nerfies website</a>.
+                    </p>
+                    <p style="text-align:center">
+                        Please contact <a href="https://github.com/XinYu-Andy">Xin Yu</a> for feedback and questions.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
