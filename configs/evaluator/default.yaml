@@ -1,0 +1,7 @@
+_target_: src.evaluator.ddp_evaluator.MyBaseEvaluator
+logger:
+  _target_: src.logger.baselogger.MyBaseLogger
+  log_dir: ${paths.test_output_dir}
+  log_freq: 50
+  log_img_freq: 1000
+  save_ckpt_freq: 10

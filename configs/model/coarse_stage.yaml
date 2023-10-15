@@ -1,0 +1,33 @@
+_target_: src.models.framework.coarse_stage.label_condition_diffusion.DiffusionModule
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 0.0002
+  weight_decay: 0.0
+
+model_ema_decay: 0.9995
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+  _partial_: true
+  T_0: 100
+
+net:
+  _target_: src.models.diffusion_nets.coarse_stage.model.label_shape_cond_pvcnn_generation.Net
+  label_nums: 40
+  label_embed_ch: 64
+  cond_embed_ch: ${model.net.label_embed_ch}
+  fps_num: 4096
+  num_classes: 6 #color (mean+variance)
+  embed_dim: 64
+  use_att: True
+  dropout: 0.2
+  extra_feature_channels: ${sum:${model.net.cond_embed_ch}, 6} # in_channels without xyz, here normal+noisy_color
+  width_multiplier: 1
+  voxel_resolution_multiplier: 1
+
+diffusion_config:
+  mean_type: "x_start"
+  schedule: "cosine"
+  timesteps: 1024

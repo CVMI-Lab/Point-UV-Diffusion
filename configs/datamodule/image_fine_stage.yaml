@@ -1,0 +1,26 @@
+_target_: src.datamodules.shapenet_datamodule.ShapenetDataModule
+dataset_type: fine_stage.clip_condition_data
+data_detail:
+  data_folder: ${paths.data_dir}
+  mesh_file:  'uv_texture_512.obj'
+  mask_file: 'uv_mask_512.png'
+  texture_file: 'uv_texture_512.png'
+  position_file: 'uv_position_512.npz'
+  uv_folder: '${datamodule.data_detail.data_folder}/uv_model_512'
+  model_folder: ${datamodule.data_detail.uv_folder}
+  category: ???
+  split_files: '${datamodule.data_detail.data_folder}/final_split_files'
+  finetune_folder: '${datamodule.data_detail.data_folder}/coarse_model/${datamodule.data_detail.category}/save_fpsuv_4096'
+  text_folder: null
+  image_folder: '${datamodule.data_detail.data_folder}/clip_image_data/${datamodule.data_detail.category}'
+  condition_type: 'image'
+  use_stage1_test: False
+  test_samples: false
+  
+data_split:
+  train_split: train_text
+  val_split: test_text
+  test_split: test_text
+batch_size: 2
+num_workers: 8
+pin_memory: True

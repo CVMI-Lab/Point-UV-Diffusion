@@ -1,0 +1,30 @@
+# path to root directory
+# this requires PROJECT_ROOT environment variable to exist
+# PROJECT_ROOT is inferred and set by pyrootutils package in `train.py` and `eval.py`
+#root_dir: ${oc.env:PROJECT_ROOT}
+root_dir: ../
+
+# path to data directory
+data_dir: /mnt/proj76/pgchen/data
+
+# path to logging directory
+log_dir: ${paths.root_dir}/logs/
+
+# path to output directory, created dynamically by hydra
+# path generation pattern is specified in `configs/hydra/default.yaml`
+# use it to store all files generated during the run, like ckpts and metrics
+exp_save_dir: ${paths.root_dir}/results
+
+# Whether to include timestamp in the directory name
+include_timestamp: false
+
+# Directory names with and without timestamp
+dir_name_with_timestamp: ${now:%Y-%m-%d}_${now:%H-%M-%S}
+dir_name_without_timestamp: static_timestamped
+
+# New field that uses the new resolver
+dir_name: ${dir_resolver:${paths.include_timestamp},${paths.dir_name_with_timestamp},${paths.dir_name_without_timestamp}}
+
+# path to output directory, created dynamically by hydra
+output_dir: ${paths.exp_save_dir}/${task_name}/${post_tag}/${paths.dir_name}
+test_output_dir: ${paths.exp_save_dir}/test/${exp_name}/${paths.dir_name}

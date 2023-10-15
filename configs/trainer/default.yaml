@@ -1,0 +1,13 @@
+_target_: src.trainer.basetrainer.MyBaseTrainer
+
+min_epochs: 1 # prevents early stopping
+max_epochs: 2000 # 10
+
+logger:
+  _target_: src.logger.baselogger.MyBaseLogger
+  log_dir: ${paths.output_dir}
+  log_freq: 5
+  log_img_freq: 1000
+  save_ckpt_freq: 50
+
+ckpt_resume: False

@@ -1,0 +1,33 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=overfit
+
+defaults:
+  - override /datamodule: image_fine_stage.yaml
+  - override /model: fine_clip_stage.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+datamodule:
+  data_detail:
+    category: '03001627'
+
+post_tag: base
+seed: 12345
+
+model:
+  scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+    _partial_: true
+    T_0: 100
+
+trainer:
+  logger:
+    _target_: src.logger.baselogger.MyBaseLogger
+    log_dir: ${paths.output_dir}
+    log_freq: 10
+    log_img_freq: 200
+    save_ckpt_freq: 50
+  max_epochs: 1000 # 10
+

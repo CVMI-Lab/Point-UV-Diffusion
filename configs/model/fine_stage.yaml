@@ -1,0 +1,55 @@
+_target_: src.models.framework.fine_stage.hybrid_condition_diffusion.DiffusionModule
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 0.0002
+  weight_decay: 0.0
+
+model_ema_decay: 0.9995
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+  _partial_: true
+  T_0: 100
+
+render_config:
+  view_num: 4
+  patch_size: 224
+  rast_resolution: 1024
+  render_loss:
+    _target_: src.models.loss_utils.CombinedLoss.CombinedLoss
+    loss_classes:
+      - _target_: src.models.loss_utils.losses.L1Loss
+    loss_weights: [ 1 ]
+  render_weight: 1.0
+
+diffusion:
+  _target_: src.models.framework.fine_stage.third_part_diffusion.build_diffusion.DiffusionPrior
+  net:
+    _target_: src.models.diffusion_nets.fine_stage.cond_diffusion_unet.Coarse_Fine_Model_Hybrid
+    in_channels: 3
+    cond_embed_ch: 32
+    model_channels: 32
+    out_channels: 3
+    num_res_blocks: [ 1,2,2,2,4 ]
+    attention_resolutions: [16] #2**(level-1)
+    dropout: [ 0.0, 0.0, 0.0, 0.0, 0.2 ]
+    channel_mult: [ 1,2,4,6,12 ]
+    use_scale_shift_norm: True
+
+  image_embed_dim: ${model.diffusion.net.in_channels}
+  timesteps: 1024
+  cond_drop_prob: 0.7
+  loss_fn:
+    _target_: src.models.loss_utils.CombinedLoss.CombinedLoss
+    loss_classes:
+      - _target_: src.models.loss_utils.losses.L2Loss
+    loss_weights: [ 1 ]
+  input_scaler: 0.7
+  predict_x_start: True
+  beta_schedule: "cosine"
+  condition_on_text_encodings: True # the paper suggests this is needed, but you can turn it off for your CLIP preprocessed text embed -> image embed training
+  sampling_clamp_l2norm: False
+  training_clamp_l2norm: False
+  init_image_embed_l2norm: False
