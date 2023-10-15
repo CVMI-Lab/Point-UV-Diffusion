@@ -198,9 +198,10 @@ If you find our work useful in your research, please consider citing:
 Our codebase is constructed upon frameworks such as [Hydra](https://github.com/facebookresearch/hydra) and [OmegaConf](https://github.com/omry/omegaconf), which provide modularity and ease of modification.
 
 Additionally, our implementation references several outstanding code repositories, specifically:
+- [PVD](https://github.com/alexzhou907/PVD)
 - [Guided Diffusion](https://github.com/openai/guided-diffusion)
-- [NVDiffrast](https://github.com/NVlabs/nvdiffrast)
 - [DALLE2-PyTorch](https://github.com/lucidrains/DALLE2-pytorch)
+- [NVDiffrast](https://github.com/NVlabs/nvdiffrast)
 
 We extend our gratitude to the developers of these libraries for making their code publicly available, thereby contributing to the broader research community.
 
