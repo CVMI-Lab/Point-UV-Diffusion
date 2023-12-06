@@ -109,6 +109,7 @@ For example, open `configs/paths/default.yaml` and modify it as follows:
 data_dir: 'path/to/your/downloaded/dataset'
 ```
 
+We release the dataset processing scripts [here](https://drive.google.com/file/d/1RUE0UvPP2UO62zFBeTRhvQpwEOPg5GoR/view?usp=sharing).
 ### Directory Descriptions
 
 - `clip_image_data`: Contains the preprocessed data used for image-conditioned training and testing.
